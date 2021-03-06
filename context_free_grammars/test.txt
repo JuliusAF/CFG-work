@@ -1,1 +1,4 @@
-S -> lambda | aSb | a
+S -> & | aSb | h
+S -> HGty
+G -> gt
+U -> kk

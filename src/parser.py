@@ -1,5 +1,5 @@
-from cfg import *
-from Error import InputError
+from src.cfg import *
+from src.Error import InputError
 import re
 
 
@@ -20,7 +20,7 @@ def parse_user_input(cfg):
 
 
 def parse_rule(cfg, rule):
-    split = rule.replace(" ", "").split("->")
+    split = rule.strip().replace(" ", "").split("->")
     if len(split) != 2:
         raise InputError(rule, "Rule is not separated by a single arrow: '->'")
 
@@ -52,7 +52,7 @@ def parse_rule(cfg, rule):
                 if len(split_rule) != 0 and len(r) != 1:
                     raise InputError(r, "Lambda must exist by itself in a rule")
                 else:
-                    split_rule.append(Lambda)
+                    split_rule.append(Lambda())
             else:
                 raise InputError(r, "Unknown character encountered: " + c)
         else:

@@ -11,6 +11,9 @@ class Terminal:
     def __str__(self):
         return self.value
 
+    def __repr__(self):
+        return str(self)
+
 
 class NonTerminal:
     def __init__(self, n):
@@ -24,6 +27,9 @@ class NonTerminal:
 
     def __str__(self):
         return self.value
+
+    def __repr__(self):
+        return str(self)
 
 
 class Lambda:
@@ -39,6 +45,9 @@ class Lambda:
     def __str__(self):
         return "lambda"
 
+    def __repr__(self):
+        return str(self)
+
 
 class Rule:
     """
@@ -48,6 +57,7 @@ class Rule:
     rhs = string of lhs replacement rule
     rhs_split = tokens of type Terminal, NonTerminal, Lambda for replacement rule
     """
+
     def __init__(self, lhs, rhs, rhs_split):
         self.lhs = lhs
         self.rhs = rhs
@@ -61,6 +71,9 @@ class Rule:
 
     def __str__(self):
         return str(self.lhs) + ": " + str(self.rhs)
+
+    def __repr__(self):
+        return str(self)
 
 
 class CFG:
@@ -81,6 +94,9 @@ class CFG:
         self.start_var = None
 
     def add_rule(self, rule):
+        if len(self.production_rules) == 0:
+            self.start_var = rule.lhs
+
         existing = self.production_rules.get(rule.lhs)
         if existing is None:
             existing = {rule}
@@ -98,26 +114,12 @@ class CFG:
         self.production_rules.update({rule.lhs: existing})
 
     def __str__(self):
-        ret = "Terminals: { "
-        count = 0
-        for var in self.terminals:
-            count += 1
-            ret += str(var)
-            if count != len(self.terminals):
-                ret += ", "
-
-        ret += " }\nNon-terminals: { "
-        count = 0
-        for var in self.non_terminals:
-            count += 1
-            ret += str(var)
-            if count != len(self.non_terminals):
-                ret += ", "
-
-        ret += " }\nProduction rules:\n"
+        ret = "Terminals: " + str(self.terminals) + "\n" + \
+              "Non-terminals: " + str(self.non_terminals) + "\n" + \
+              "Production rules:\n"
 
         for terminal, rules in self.production_rules.items():
-            ret += str(terminal) + ": "
+            ret += str(terminal) + " -> "
             count = 0
 
             for rule in rules:
