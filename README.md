@@ -9,6 +9,7 @@ I'm playing around with parsing context free grammars, checking for correctness,
 - LHS and RHS are divided by '->'
 - Multiple production rules for a single non-terminal may either be separated by a new line, or by '|'
 - Whitespaces are ignored
+- The empty rule, aka lambda, is represented by '&'
 
 ### Functionality
 
