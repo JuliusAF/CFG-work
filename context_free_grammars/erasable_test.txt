@@ -1,0 +1,6 @@
+S -> AcB
+A -> CBC
+B -> &
+B -> abB
+C -> cCd
+C -> BB

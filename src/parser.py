@@ -59,9 +59,6 @@ def parse_rule(cfg, rule):
             if temp is not None:
                 split_rule.append(Terminal(temp))
 
-        if isinstance(split_rule[0], Lambda):
-            new_rule = Rule(Terminal(lhs), "lambda", split_rule)
-        else:
-            new_rule = Rule(Terminal(lhs), r, split_rule)
+        new_rule = Rule(Terminal(lhs), split_rule)
 
         cfg.add_rule(new_rule)
