@@ -29,8 +29,8 @@ class TestParseMethods(unittest.TestCase):
         return "\n" + msg + "\n" + str(self.cfg) + "---------------------\n" + str(self.cfg_result)
 
     def _compare_cfgs(self):
-        # self.assertSetEqual(self.cfg.terminals, self.cfg_result.terminals, "terminals")
-        # self.assertSetEqual(self.cfg.non_terminals, self.cfg_result.non_terminals, "non-terminals")
+        self.assertSetEqual(self.cfg.terminals, self.cfg_result.terminals, "terminals")
+        self.assertSetEqual(self.cfg.non_terminals, self.cfg_result.non_terminals, "non-terminals")
         self.assertEqual(self.cfg.start_var, self.cfg_result.start_var,
                          self._pretty_print_error("start variable"))
         for key, rules in self.cfg.production_rules.items():
