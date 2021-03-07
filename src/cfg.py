@@ -107,27 +107,35 @@ class CFG:
 
         existing = self.production_rules.get(rule.lhs)
         if existing is None:
-            existing = {rule}
+            self.production_rules.update({rule.lhs: {rule}})
         else:
             existing.add(rule)
 
+        self.non_terminals.add(rule.lhs)
         if not isinstance(rule.rhs[0], Lambda):
-            self.terminals.add(rule.lhs)
             for var in rule.rhs:
                 if isinstance(var, Terminal):
                     self.terminals.add(var)
                 elif isinstance(var, NonTerminal):
                     self.non_terminals.add(var)
 
-        self.production_rules.update({rule.lhs: existing})
+    def duplicate_rule(self, rule, new_lhs):
+        new_rule = Rule(new_lhs, rule.rhs)
+        existing = self.production_rules.get(new_lhs)
+        if existing is None:
+            self.production_rules.update({new_lhs: new_rule})
+        else:
+            existing.add(new_rule)
 
     def remove_rule(self, rule):
         rules = self.production_rules.get(rule.lhs)
         rules.discard(rule)
+        if len(rules) == 0:
+            self.production_rules.pop(rule.lhs)
 
     def __str__(self):
-        ret = "Terminals: " + str(self.terminals) + "\n" + \
-              "Non-terminals: " + str(self.non_terminals) + "\n" + \
+        ret = "Non-Terminals: " + str(self.non_terminals) + "\n" + \
+              "Terminals: " + str(self.terminals) + "\n" + \
               "Production rules:\n"
 
         for terminal, rules in self.production_rules.items():
@@ -163,7 +171,7 @@ def get_erasable_vars(cfg):
                 else:
                     can_erase = True
                     for var in rule.rhs:
-                        if isinstance(var, NonTerminal) or var not in erasable:
+                        if isinstance(var, Terminal) or var not in erasable:
                             can_erase = False
                             break
                     if can_erase:
@@ -207,11 +215,72 @@ def get_unit_rules(cfg):
     unit_rules = set()
     for keys, rules in cfg.production_rules.items():
         for rule in rules:
-            if len(rule.rhs) == 1 and rule.rhs[0] in cfg.terminals:
+            if _is_unit_rule(rule):
                 unit_rules.add(rule)
 
     return unit_rules
 
 
+def _is_unit_rule(rule):
+    return len(rule.rhs) == 1 and isinstance(rule.rhs[0], NonTerminal)
+
+
 def remove_unit_rules(cfg):
     unit_rules = get_unit_rules(cfg)
+    for key, rules in cfg.production_rules.items():
+        added_rules = {key}
+        worklist = []
+        for rule in rules:
+            if _is_unit_rule(rule) and rule.rhs[0] not in added_rules:
+                added_rules.add(rule.rhs[0])
+                worklist.append(rule.rhs[0])
+
+        for var in worklist:
+            var_rules = cfg.production_rules.get(var)
+            if var_rules is None:
+                continue
+
+            for rule in var_rules:
+                if _is_unit_rule(rule) and rule.rhs[0] not in added_rules:
+                    added_rules.add(rule.rhs[0])
+                    worklist.append(rule.rhs[0])
+                elif not _is_unit_rule(rule):
+                    cfg.duplicate_rule(rule, key)
+
+    for rule in unit_rules:
+        cfg.remove_rule(rule)
+
+
+def get_productive_vars(cfg):
+    productives = set()
+    changed = True
+    while changed:
+        changed = False
+        for key, rules in cfg.production_rules.items():
+            for rule in rules:
+                productive = True
+                for var in rule.rhs:
+                    if isinstance(var, NonTerminal) and var not in productives:
+                        productive = False
+                        break
+
+                if productive and key not in productives:
+                    productives.add(key)
+                    changed = True
+                    break
+
+    return productives
+
+
+def remove_nonproductive_rules(cfg):
+    productives = get_productive_vars(cfg)
+    worklist = []
+    for key, rules in cfg.production_rules.items():
+        for rule in rules:
+            for var in rule.rhs:
+                if isinstance(var, NonTerminal) and var not in productives:
+                    worklist.append(rule)
+                    break
+
+    for rem in worklist:
+        cfg.remove_rule(rem)

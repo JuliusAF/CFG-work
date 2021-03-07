@@ -10,6 +10,12 @@ def parse_file(cfg, file):
             parse_rule(cfg, line)
 
 
+def parse_file_path(cfg, path):
+    with open(path, 'r') as f:
+        for line in f:
+            parse_rule(cfg, line)
+
+
 def parse_user_input(cfg):
     while True:
         line = input()
@@ -36,11 +42,11 @@ def parse_rule(cfg, rule):
 
         for c in r:
             if not c.isnumeric() and temp is not None:
-                split_rule.append(Terminal(temp))
+                split_rule.append(NonTerminal(temp))
                 temp = None
 
             if c.islower():
-                split_rule.append(NonTerminal(c))
+                split_rule.append(Terminal(c))
             elif c.isupper():
                 temp = c
             elif c.isnumeric():
@@ -57,8 +63,7 @@ def parse_rule(cfg, rule):
                 raise InputError(r, "Unknown character encountered: " + c)
         else:
             if temp is not None:
-                split_rule.append(Terminal(temp))
+                split_rule.append(NonTerminal(temp))
 
-        new_rule = Rule(Terminal(lhs), split_rule)
-
+        new_rule = Rule(NonTerminal(lhs), split_rule)
         cfg.add_rule(new_rule)
