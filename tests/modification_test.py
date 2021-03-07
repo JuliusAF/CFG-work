@@ -1,6 +1,6 @@
 import unittest
 from src.parser import *
-from src.cfg import *
+from src.cfg_modify import *
 
 test_path = "../context_free_grammars/tests/"
 
