@@ -1,0 +1,12 @@
+A -> CccD
+A -> cBGB
+B -> CD
+B -> G
+C -> EEDa
+C -> lambda
+D -> BGBcD
+D -> aca
+E -> acbb
+F -> BCcG
+F -> ECADA
+G -> CcbG

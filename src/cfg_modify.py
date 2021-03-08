@@ -1,4 +1,5 @@
 from src.cfg import *
+import copy
 
 
 def get_erasable_vars(cfg):
@@ -32,7 +33,7 @@ def get_erasable_vars(cfg):
 # sans the erasable variable to 'to_add'
 def _remove_lambdas_help(erasable, to_add, rule):
     for i in range(len(rule.rhs)):
-        if rule.rhs[i] in erasable:
+        if rule.rhs[i] in erasable and len(rule.rhs) > 1:
             temp = copy.deepcopy(rule.rhs)
             temp.pop(i)
             to_add.append(Rule(rule.lhs, temp))
@@ -124,6 +125,10 @@ def remove_nonproductive_rules(cfg):
     worklist = []
     for key, rules in cfg.production_rules.items():
         for rule in rules:
+            if len(rule.rhs) == 1 and rule.lhs == rule.rhs[0]:
+                worklist.append(rule)
+                continue
+
             for var in rule.rhs:
                 if isinstance(var, NonTerminal) and var not in productives:
                     worklist.append(rule)
@@ -131,3 +136,40 @@ def remove_nonproductive_rules(cfg):
 
     for rem in worklist:
         cfg.remove_rule(rem)
+
+
+def get_reachable_vars(cfg):
+    reachables = {cfg.start_var}
+    changed = True
+    while changed:
+        changed = False
+        for key, rules in cfg.production_rules.items():
+            for rule in rules:
+                if rule.lhs in reachables:
+                    for var in rule.rhs:
+                        if isinstance(var, NonTerminal) and var not in reachables:
+                            reachables.add(var)
+                            changed = True
+
+    return reachables
+
+
+def remove_nonreachable_rules(cfg):
+    reachables = get_reachable_vars(cfg)
+    worklist = []
+    for key, rules in cfg.production_rules.items():
+        if key not in reachables:
+            worklist.extend(rules)
+            continue
+        for rule in rules:
+            for var in rule.rhs:
+                if isinstance(var, NonTerminal) and var not in reachables:
+                    worklist.append(rule)
+
+    for rem in worklist:
+        cfg.remove_rule(rem)
+
+
+def remove_useless_vars(cfg):
+    remove_nonproductive_rules(cfg)
+    remove_nonreachable_rules(cfg)

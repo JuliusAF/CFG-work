@@ -2,6 +2,7 @@ import unittest
 from src.parser import *
 from src.cfg_modify import *
 
+
 test_path = "../context_free_grammars/tests/"
 
 
@@ -29,8 +30,10 @@ class TestParseMethods(unittest.TestCase):
         return "\n" + msg + "\n" + str(self.cfg) + "---------------------\n" + str(self.cfg_result)
 
     def _compare_cfgs(self):
-        self.assertSetEqual(self.cfg.terminals, self.cfg_result.terminals, "terminals")
-        self.assertSetEqual(self.cfg.non_terminals, self.cfg_result.non_terminals, "non-terminals")
+        self.assertSetEqual(self.cfg.terminals, self.cfg_result.terminals,
+                            self._pretty_print_error("terminals"))
+        self.assertSetEqual(self.cfg.non_terminals, self.cfg_result.non_terminals,
+                            self._pretty_print_error("non terminals"))
         self.assertEqual(self.cfg.start_var, self.cfg_result.start_var,
                          self._pretty_print_error("start variable"))
         for key, rules in self.cfg.production_rules.items():
@@ -71,7 +74,6 @@ class TestParseMethods(unittest.TestCase):
     def test_unit_rule_removal(self):
         parse_file(self.cfg, "unit_rule_removal.txt")
         remove_unit_rules(self.cfg)
-        print(self.cfg)
         s_rules = {Rule(self.S, [self.a]),
                    Rule(self.S, [self.b, self.b]),
                    Rule(self.S, [self.b, self.c]),
@@ -89,6 +91,17 @@ class TestParseMethods(unittest.TestCase):
     def test_nonproductive_removal(self):
         self._load_cfgs("non_productives")
         remove_nonproductive_rules(self.cfg)
+        self._compare_cfgs()
+
+    def test_useless_removal(self):
+        self._load_cfgs("useless_var")
+        remove_useless_vars(self.cfg)
+        self._compare_cfgs()
+
+    def test_no_lambda_unit(self):
+        self._load_cfgs("no_lambda_unit")
+        remove_lambdas(self.cfg)
+        remove_unit_rules(self.cfg)
         self._compare_cfgs()
 
 

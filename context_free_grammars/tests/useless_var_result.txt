@@ -1,0 +1,5 @@
+A -> CccD
+C -> EEDa
+C -> lambda
+D -> aca
+E -> acbb

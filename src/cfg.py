@@ -1,6 +1,3 @@
-import copy
-
-
 class Terminal:
     def __init__(self, t):
         self.value = t
@@ -128,7 +125,13 @@ class CFG:
                     elif isinstance(var, NonTerminal) and self.production_rules.get(var) is None:
                         self.non_terminals.discard(var)
 
+        if self.production_rules.get(rule.lhs) is None and self._refs.get(rule.lhs) is None:
+            self.non_terminals.discard(rule.lhs)
+
     def add_rule(self, rule):
+        if len(rule.rhs) == 0:
+            return
+
         if len(self.production_rules) == 0:
             self.start_var = rule.lhs
 
@@ -148,6 +151,9 @@ class CFG:
         self._add_refs(rule)
 
     def duplicate_rule(self, rule, new_lhs):
+        if len(rule.rhs) == 0:
+            return
+
         new_rule = Rule(new_lhs, rule.rhs)
         existing = self.production_rules.get(new_lhs)
         if existing is None:
@@ -158,6 +164,9 @@ class CFG:
         self._add_refs(new_rule)
 
     def remove_rule(self, rule):
+        if len(rule.rhs) == 0:
+            return
+
         rules = self.production_rules.get(rule.lhs)
         rules.discard(rule)
         if len(rules) == 0:

@@ -1,0 +1,10 @@
+A -> CD
+A -> aB
+B -> aba
+C -> BB
+C -> D
+C -> baD
+C -> &
+D -> BBC
+D -> C
+D -> &
