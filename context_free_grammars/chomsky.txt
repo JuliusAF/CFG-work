@@ -1,0 +1,6 @@
+A -> DCcDc
+A -> ac
+B -> ACBBC
+B -> CCaac
+C -> bbA
+D -> aBCa

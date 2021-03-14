@@ -52,7 +52,8 @@ def remove_lambdas(cfg):
                 _remove_lambdas_help(erasable, to_add, to_add[count])
                 count += 1
 
-        cfg.production_rules.update({key: rules.union(set(to_add))})
+        for add in to_add:
+            cfg.add_rule(add)
 
     for erase in erasable:
         cfg.remove_rule(Rule(erase, [Lambda()]))

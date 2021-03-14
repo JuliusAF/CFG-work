@@ -1,6 +1,7 @@
 import unittest
 from src.parser import *
 from src.cfg_modify import *
+from src.chomsky import *
 
 
 test_path = "../context_free_grammars/tests/"
@@ -103,6 +104,11 @@ class TestParseMethods(unittest.TestCase):
         remove_lambdas(self.cfg)
         remove_unit_rules(self.cfg)
         self._compare_cfgs()
+
+    def test_chomsky_transform(self):
+        parse_file(self.cfg, "chomsky.txt")
+        transform_to_CNF(self.cfg)
+        print(self.cfg)
 
 
 if __name__ == '__main__':
