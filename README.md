@@ -21,4 +21,3 @@ The following is the planned functionality and the
 - Then I want to implement CFG reduction techniques, such as lambda rule removals, unit production removals, removing useless variables
 - Then I want to implement transformation to Chomsky normal form
 - Using the hopefully correct Chomsky normal form, I'd like to implement the CYK algorithm
-- Lastly I'd like to implement LL parsing, but how can I implement something I do not even understand :). Anyway, if I reach here it'll be LL(1) first.
